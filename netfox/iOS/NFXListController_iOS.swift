@@ -39,7 +39,9 @@ class NFXListController_iOS: NFXListController, UITableViewDelegate, UITableView
         self.tableView.register(NFXListCell.self, forCellReuseIdentifier: NSStringFromClass(NFXListCell.self))
         
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage.NFXSettings(), style: .plain, target: self, action: #selector(NFXListController_iOS.settingsButtonPressed))
-
+        if NFX.sharedInstance().getSelectedGesture() ~= .custom {
+            self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: NFX.sharedInstance(), action: #selector(NFX.hide))
+        }
         let searchView = UIView()
         searchView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width - 60, height: 0)
         searchView.autoresizingMask = [.flexibleWidth]
