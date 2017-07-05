@@ -228,23 +228,6 @@ open class NFX: NSObject
 
 #if os(iOS)
 
-extension UIApplication {
-    class func topViewController(controller: UIViewController? = UIApplication.shared.keyWindow?.rootViewController) -> UIViewController? {
-        if let navigationController = controller as? UINavigationController {
-            return topViewController(controller: navigationController.visibleViewController)
-        }
-        if let tabController = controller as? UITabBarController {
-            if let selected = tabController.selectedViewController {
-                return topViewController(controller: selected)
-            }
-        }
-        if let presented = controller?.presentedViewController {
-            return topViewController(controller: presented)
-        }
-        return controller
-    }
-}
-    
 extension NFX {
     
     fileprivate func showNFXFollowingPlatform()
@@ -260,16 +243,36 @@ extension NFX {
         navigationController!.navigationBar.barTintColor = UIColor.NFXStarkWhiteColor()
         navigationController!.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName : UIColor.NFXOrangeColor()]
         
-        UIApplication.topViewController()?.present(navigationController!, animated: true, completion: nil)
+        topmostViewController?.present(navigationController!, animated: true, completion: nil)
     }
     
     fileprivate func hideNFXFollowingPlatform(_ completion: (() -> Void)?)
     {
-        UIApplication.topViewController()?.dismiss(animated: true, completion: { () -> Void in
+        topmostViewController?.dismiss(animated: true, completion: { () -> Void in
             if let notNilCompletion = completion {
                 notNilCompletion()
             }
         })
+    }
+    
+    fileprivate var topmostViewController: UIViewController? {
+        func searchTopViewController(_ controller: UIViewController?) -> UIViewController? {
+            if let navigationController = controller as? UINavigationController {
+                return searchTopViewController(navigationController.visibleViewController)
+            }
+            if let tabController = controller as? UITabBarController {
+                if let selected = tabController.selectedViewController {
+                    return searchTopViewController(selected)
+                }
+            }
+            if let presented = controller?.presentedViewController {
+                return searchTopViewController(presented)
+            }
+            return controller
+        }
+
+        let rootViewController =  UIApplication.shared.keyWindow?.rootViewController
+        return searchTopViewController(rootViewController)
     }
 }
 
